@@ -62,7 +62,7 @@ def cus_details(cus_id):
         cursor.close() 
         conn.close() 
 
-@app.route('/updat', methods=['PUT'])
+@app.route('/update', methods=['PUT'])
 def update_cus():
     try:
         _json = request.json
