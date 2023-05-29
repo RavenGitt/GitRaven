@@ -89,12 +89,12 @@ def update_cus():
         cursor.close() 
         conn.close() 
 
-@app.route('/delete/<int:cus_id>', methods=['DELETE'])
+@app.route('/delete/<int:customer_id>', methods=['DELETE'])
 def delete_cus(customer_id):
 	try:
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		cursor.execute("DELETE FROM emp WHERE customer_id =%s", (customer_id,))
+		cursor.execute("DELETE FROM customers WHERE customer_id =%s", (customer_id,))
 		conn.commit()
 		respone = jsonify('Customer deleted successfully!')
 		respone.status_code = 200
