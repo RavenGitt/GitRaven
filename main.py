@@ -8,16 +8,15 @@ from flask import flash, request
 def create_cus():
     try:        
         _json = request.json
-        customer_id = _json['name']
-        firstname = _json['firstname']
-        lastname = _json['lastname']
+        first_name = _json['first_name']
+        last_name = _json['last_name']
         email = _json['email']
-        phonenumber = _json['phone']
-        if customer_id and firstname and lastname and email and phonenumber and request.method == 'POST':
+        phone_number = _json['phone_number']
+        if first_name and last_name and email and phone_number and request.method == 'POST':
             conn = mysql.connect()
             cursor = conn.cursor(pymysql.cursors.DictCursor)		
-            sqlQuery = "INSERT INTO cus(firstname, lastname, email, phonenumber, customer_id) VALUES(%s, %s, %s, %s)"
-            bindData = (customer_id, firstname, lastname, email, phonenumber)            
+            sqlQuery = "INSERT INTO customers(first_name, last_name, email, phone_number) VALUES(%s, %s, %s, %s)"
+            bindData = ( first_name, last_name, email, phone_number)            
             cursor.execute(sqlQuery, bindData)
             conn.commit()
             respone = jsonify('Customer added successfully!')
@@ -31,12 +30,12 @@ def create_cus():
         cursor.close() 
         conn.close()          
      
-@app.route('/cus')
+@app.route('/customers')
 def cus():
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT customer_id, firstname, lastname, email, phonenumber FROM cus")
+        cursor.execute("SELECT customer_id, first_name, last_name, email, phone_number FROM customers")
         cusRows = cursor.fetchall()
         respone = jsonify(cusRows)
         respone.status_code = 200
@@ -47,12 +46,12 @@ def cus():
         cursor.close() 
         conn.close()  
 
-@app.route('/cus/')
-def emp_details(cus_id):
+@app.route('/customers/<int:cus_id>', methods=['GET'])
+def cus_details(cus_id):
     try:
         conn = mysql.connect()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute("SELECT customer_id, name, email, phone, address FROM cus WHERE id =%s", cus_id)
+        cursor.execute("SELECT customer_id, first_name, last_name, email, phone_number FROM customers WHERE customer_id =%s", cus_id)
         cusRow = cursor.fetchone()
         respone = jsonify(cusRow)
         respone.status_code = 200
@@ -64,17 +63,17 @@ def emp_details(cus_id):
         conn.close() 
 
 @app.route('/update', methods=['PUT'])
-def update_emp():
+def update_cus():
     try:
         _json = request.json
-        customer_id = _json['id']
-        firstname = _json['firstname']
-        lastname = _json['lastname']
+        customer_id = _json['customer_id']
+        first_name = _json['first_name']
+        last_name = _json['last_name']
         email = _json['email']
-        phonenumber = _json['phonenumber']
-        if firstname and lastname and email and phonenumber and customer_id and request.method == 'PUT':			
-            sqlQuery = "UPDATE emp SET name=%s, email=%s, phone=%s, address=%s WHERE id=%s"
-            bindData = (firstname, lastname, email, phonenumber, customer_id,)
+        phone_number = _json['phone_number']
+        if customer_id and first_name and last_name and email and phone_number and request.method == 'PUT':			
+            sqlQuery = "UPDATE customers SET first_name=%s, last_name=%s, email=%s, phone_number=%s WHERE customer_id=%s"
+            bindData = ( first_name, last_name, email, phone_number,customer_id)
             conn = mysql.connect()
             cursor = conn.cursor()
             cursor.execute(sqlQuery, bindData)
@@ -90,12 +89,12 @@ def update_emp():
         cursor.close() 
         conn.close() 
 
-@app.route('/delete/', methods=['DELETE'])
-def delete_emp(id):
+@app.route('/delete/<int:cus_id>', methods=['DELETE'])
+def delete_cus(customer_id):
 	try:
 		conn = mysql.connect()
 		cursor = conn.cursor()
-		cursor.execute("DELETE FROM emp WHERE id =%s", (id,))
+		cursor.execute("DELETE FROM emp WHERE customer_id =%s", (customer_id,))
 		conn.commit()
 		respone = jsonify('Customer deleted successfully!')
 		respone.status_code = 200
